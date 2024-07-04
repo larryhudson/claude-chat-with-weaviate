@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Claude 3.5 Sonnet chatbot with custom tools
 
-## Getting Started
+![Screenshot of chatbot interface](./docs/screenshot.png)
 
-First, run the development server:
+This project is a [Next.js](https://nextjs.org/) application that demonstrates how to add custom tools to [Anthropic's Claude 3.5 Sonnet model](https://www.anthropic.com/news/claude-3-5-sonnet) to give it extra capabilities.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Key features include:
+- Note-taking with semantic search capabilities using the [Weaviate vector database](https://weaviate.io/)
+- Web search functionality using the [Serper API](https://serper.dev/)
+- Uses server sent events to stream the large language model's responses to the frontend while the message is generating.
+
+## Video walkthrough
+
+[![Video tutorial](https://img.youtube.com/vi/3EqjKtwCM_E/0.jpg)](https://www.youtube.com/watch?v=3EqjKtwCM_E)
+
+You can see a video walkthrough of this project here. In the video, I give a high-level overview of how tool use works with the Anthropic API.
+
+
+## Related tutorial - how to extend Claude's capabilities with custom tools
+
+If you would like to learn more about how to use custom tools with the Anthropic API, I have created a video tutorial with accompanying code examples here.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+- Node.js 
+- Docker - if you are using macOS, I recommend [OrbStack](https://orbstack.dev/) as a lightweight alternative to Docker Desktop.
+
+You will also need an [Anthropic API](https://console.anthropic.com/) account for the chatbot interface and an [OpenAI API](https://platform.openai.com/) account for the Weaviate database's embeddings.
+
+If you would like to use the 'search_web_with_google' tool, you will also need an account with the [Serper API](https://serper.dev/).
+
+## Setup Instructions
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/larryhudson/claude-custom-tools-demo.git
+   cd claude-custom-tools-demo
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
+
+3. Set up environment variables: Duplicate the `.env.local.sample` file in the root project directory to `.env.local` and fill in your API keys.
+
+4. Start the Weaviate backend:
+   ```
+   docker-compose --env-file=.env.local up -d
+   ```
+
+5. Run the Weaviate initialisation script to create the 'Note' collection. This runs the `scripts/init.ts` script:
+```
+npm run init
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Run the development server:
+   ```
+   npm run dev
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+7. Open your browser and navigate to `http://localhost:3000` to see the application running.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## How to use
 
-## Learn More
+- Use the chat interface to interact with the AI assistant.
+- The assistant can perform web searches, extract YouTube transcripts, find and fetch RSS feeds, and manage notes.
+- To manage notes, navigate to the Notes page where you can view, search, edit, and delete notes.
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `src/components/ChatComponent.tsx`: React component for the chat interface
+- `src/app/api/stream/route.ts`: API route handler for the Claude AI integration
+- `src/app/notes/page.tsx`: Page for managing notes
+- `docker-compose.yml`: Configuration for the Weaviate backend
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is licensed under the MIT License.
