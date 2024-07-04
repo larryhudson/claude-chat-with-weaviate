@@ -1,7 +1,7 @@
 {
   "name": "claude-chat-with-weaviate",
   "version": "0.1.0",
-  "private": true,
+  "description": "Demo Next.js project with Claude chatbot, custom tools including Weaviate",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
