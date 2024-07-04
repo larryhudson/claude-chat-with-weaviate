@@ -18,7 +18,7 @@ You can see a video walkthrough of this project here. In the video, I give a hig
 
 ## Related tutorial - how to extend Claude's capabilities with custom tools
 
-If you would like to learn more about how to use custom tools with the Anthropic API, I have created a video tutorial with accompanying code examples here.
+I have also created a video tutorial showing how to define custom tools and use them with Anthropic's TypeScript client. You can see the [video here](https://www.youtube.com/watch?v=C-fyjyv7xpE) and the [accompanying code examples here](https://github.com/larryhudson/claude-custom-tools-typescript).
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ You will also need an [Anthropic API](https://console.anthropic.com/) account fo
 
 If you would like to use the 'search_web_with_google' tool, you will also need an account with the [Serper API](https://serper.dev/).
 
-## Setup Instructions
+## Setup instructions
 
 1. Clone the repository:
    ```
@@ -68,7 +68,7 @@ npm run init
 - The assistant can perform web searches, extract YouTube transcripts, find and fetch RSS feeds, and manage notes.
 - To manage notes, navigate to the Notes page where you can view, search, edit, and delete notes.
 
-## Project Structure
+## Project structure
 
 - `src/components/ChatComponent.tsx`: React component for the chat interface
 - `src/app/api/stream/route.ts`: API route handler for the Claude AI integration
