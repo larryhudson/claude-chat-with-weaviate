@@ -1,6 +1,6 @@
 # Claude 3.5 Sonnet chatbot with custom tools
 
-![Screenshot of chatbot interface](./docs/screenshot.png)
+<img src="./docs/screenshot.png" alt="Screenshot of chatbot interface" width="400">
 
 This project is a [Next.js](https://nextjs.org/) application that demonstrates how to add custom tools to [Anthropic's Claude 3.5 Sonnet model](https://www.anthropic.com/news/claude-3-5-sonnet) to give it extra capabilities.
 
