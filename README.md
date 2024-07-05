@@ -35,7 +35,7 @@ If you would like to use the 'search_web_with_google' tool, you will also need a
 1. Clone the repository:
    ```
    git clone https://github.com/larryhudson/claude-chat-with-weaviate.git
-   cd claude-custom-tools-demo
+   cd claude-chat-with-weaviate
    ```
 
 2. Install dependencies:
