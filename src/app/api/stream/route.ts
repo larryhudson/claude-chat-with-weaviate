@@ -8,15 +8,10 @@ const systemPrompt = `You are a helpful assistant with access to tools that give
 
 async function processMessages(initialMessages, controller) {
 
-    console.log({ initialMessages });
-
     const newMessages = [];
 
     let stopReason;
     do {
-
-        const messagesToSend = [...initialMessages, newMessages];
-        console.log(JSON.stringify({ messagesToSend }, null, 2));
 
         const messageStream = anthropic.messages.stream({
             messages: [...initialMessages, ...newMessages],
@@ -37,8 +32,6 @@ async function processMessages(initialMessages, controller) {
         }
 
         const claudeResponse = await messageStream.finalMessage();
-
-        console.log("Usage from Claude response", claudeResponse.usage)
 
         const assistantMessage = {
             role: 'assistant',
