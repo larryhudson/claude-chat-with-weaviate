@@ -25,8 +25,8 @@ export default async function DeleteNotePage({ params }) {
             <Card>
                 <CardContent className="pt-6">
                     <p className="mb-2">Are you sure you want to delete this note? This action cannot be undone.</p>
-                    <p><strong>Context:</strong> {noteData.context}</p>
-                    <p><strong>Content:</strong> {noteData.content.substring(0, 100)}...</p>
+                    <p><strong>Context:</strong> {noteData.context.toString()}</p>
+                    <p><strong>Content:</strong> {noteData.content.toString().substring(0, 100)}...</p>
                 </CardContent>
                 <CardFooter className="flex justify-end space-x-2">
                     <Button variant="outline" asChild>

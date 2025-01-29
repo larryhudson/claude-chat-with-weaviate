@@ -26,7 +26,7 @@ const WelcomeDialog = ({ isOpen, onClose }) => {
                     <ul>
                         <li>Ask Claude to save notes for future reference. These are saved in the Weaviate vector database.</li>
                         <li>Once there are some notes in the database, ask Claude to do stuff with them.</li>
-                        <li>View, edit and delete notes manually in the 'Notes' section.</li>
+                        <li>View, edit and delete notes manually in the Notes section.</li>
                     </ul>
                 </div>
                 <DialogFooter>

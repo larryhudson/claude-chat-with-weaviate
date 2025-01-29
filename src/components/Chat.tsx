@@ -48,7 +48,7 @@ const ToolSection = ({ icon: Icon, title, content }) => {
     );
 };
 
-const ChatMessage = ({ message, isLoading, showDeleteButton, onDeleteMessage }) => {
+const ChatMessage = ({ message, isLoading = false, showDeleteButton = null, onDeleteMessage = null }) => {
     const { role, content } = message;
     const isUser = role === "user";
 
@@ -58,12 +58,14 @@ const ChatMessage = ({ message, isLoading, showDeleteButton, onDeleteMessage }) 
                 {message.content.map((contentBlock, index) => (
                     contentBlock.type === 'tool_use' ? (
                         <ToolSection
+                            key={index}
                             icon={Settings}
                             title={`Using tool: ${contentBlock.name}`}
                             content={contentBlock.input}
                         />
                     ) : contentBlock.type === 'tool_result' ? (
                         <ToolSection
+                            key={index}
                             icon={CheckCircle}
                             title="Tool result"
                             content={contentBlock.content}

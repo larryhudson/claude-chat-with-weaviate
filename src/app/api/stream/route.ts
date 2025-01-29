@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from "@anthropic-ai/sdk";
 import { toolDefinitions, toolHandlers } from '@/lib/tools';
+import { RawContentBlockDeltaEvent, RawMessageStreamEvent, TextDelta } from '@anthropic-ai/sdk/resources/messages.mjs';
 
 const anthropic = new Anthropic();
 
 const systemPrompt = `You are a helpful assistant with access to tools that give you extra capabilities. When asked a question that is outside of your training data, use the search_notes tool to find relevant information, including personal information about the user.`
+
+interface IClaudeStreamChunk {
+    type: string;
+    index?: number;
+    delta?: {
+        type: string;
+        text: string;
+    };
+}
 
 async function processMessages(initialMessages, controller) {
 
@@ -26,8 +36,9 @@ async function processMessages(initialMessages, controller) {
         };
 
         for await (const chunk of messageStream) {
+
             if (chunk.type === 'content_block_start' || chunk.type === 'content_block_delta') {
-                sendEventToBrowser('streaming_message', chunk.delta?.text || '');
+                sendEventToBrowser('streaming_message', ((chunk as RawContentBlockDeltaEvent).delta as TextDelta)?.text || '');
             }
         }
 

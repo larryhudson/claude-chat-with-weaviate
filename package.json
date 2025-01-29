@@ -1,6 +1,6 @@
 {
   "name": "claude-chat-with-weaviate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Demo Next.js project with Claude chatbot, custom tools including Weaviate",
   "scripts": {
     "dev": "next dev",
@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "init": "tsx scripts/init.ts",
-    "postinstall": "npm run init"
+    "postinstall": "npm run init && npm run build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.2",
