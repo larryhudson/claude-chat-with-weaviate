@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import weaviate from "weaviate-client";
+import {db} from "@/lib/db";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 
@@ -9,7 +9,7 @@ import { deleteNote } from "@/actions";
 // Asynchronous function for getting the note data
 // Because this page is a server component, this happens on the server
 async function getNoteData(noteId) {
-    const weaviateClient = await weaviate.connectToLocal();
+    const weaviateClient = await db.connect();
     const notesCollection = weaviateClient.collections.get('Note');
     const note = await notesCollection.query.fetchObjectById(noteId);
     return note.properties;

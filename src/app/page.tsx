@@ -1,12 +1,12 @@
 import Chat from "@/components/Chat";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import weaviate from "weaviate-client";
+import {db} from "@/lib/db";
 
 
 // Get the number of notes in Weaviate database
 // If  the number is zero, the 'welcome dialog' will be displayed.
 async function getNotesCount() {
-  const weaviateClient = await weaviate.connectToLocal();
+  const weaviateClient = await db.connect();
   const notesCollection = weaviateClient.collections.get('Note');
 
   const queryResponse = await notesCollection.query.fetchObjects();

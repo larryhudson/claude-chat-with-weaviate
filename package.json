@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "init": "tsx scripts/init.ts"
+    "init": "tsx scripts/init.ts",
+    "postinstall": "npm run init"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.2",
@@ -74,6 +75,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "dotenv": "^16.4.7",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8",

@@ -1,5 +1,5 @@
 // tools.ts
-import weaviate from "weaviate-client";
+import {db} from "./db";
 import cheerio from 'cheerio';
 import Parser from 'rss-parser';
 import { YoutubeTranscript } from 'youtube-transcript';
@@ -86,7 +86,7 @@ export const getReadableContentForUrl = async ({ url }: { url: string }): Promis
       .catch(() => console.log('Main content selector not found, proceeding anyway.'));
 
     await page.evaluate(() => {
-      const cookieButtons = document.querySelectorAll('button, a, span');
+      const cookieButtons: NodeListOf<HTMLLinkElement> = document.querySelectorAll('button, a, span');
       for (const button of cookieButtons) {
         if (button.textContent.toLowerCase().includes('accept') ||
           button.textContent.toLowerCase().includes('agree') ||
@@ -124,7 +124,7 @@ export const getHtmlForUrl = async ({ url }: { url: string }): Promise<string> =
 };
 
 export const searchNotes = async ({ query }: { query: string }): Promise<any> => {
-  const weaviateClient = await weaviate.connectToLocal();
+  const weaviateClient = await db.connect();
   const notesCollection = weaviateClient.collections.get('Note');
 
   const queryResponse = await notesCollection.query.hybrid(query, {
@@ -135,7 +135,7 @@ export const searchNotes = async ({ query }: { query: string }): Promise<any> =>
 };
 
 export const addNote = async ({ content, context }: { content: string; context: string }): Promise<any> => {
-  const weaviateClient = await weaviate.connectToLocal();
+  const weaviateClient = await db.connect();
   const notesCollection = weaviateClient.collections.get('Note');
 
   const createdNote = await notesCollection.data.insert({
@@ -152,7 +152,7 @@ export const addNote = async ({ content, context }: { content: string; context: 
 };
 
 export const updateNote = async ({ id, content, context }: { id: string; content: string; context: string }): Promise<boolean> => {
-  const weaviateClient = await weaviate.connectToLocal();
+  const weaviateClient = await db.connect();
   const notesCollection = weaviateClient.collections.get('Note');
 
   await notesCollection.data.update({
@@ -167,7 +167,7 @@ export const updateNote = async ({ id, content, context }: { id: string; content
 };
 
 export const deleteNote = async ({ id }: { id: string }): Promise<boolean> => {
-  const weaviateClient = await weaviate.connectToLocal();
+  const weaviateClient = await db.connect();
   const notesCollection = weaviateClient.collections.get('Note');
 
   await notesCollection.data.deleteById(id);
@@ -176,7 +176,7 @@ export const deleteNote = async ({ id }: { id: string }): Promise<boolean> => {
 };
 
 export const deleteAllNotes = async (): Promise<void> => {
-  const weaviateClient = await weaviate.connectToLocal();
+  const weaviateClient = await db.connect();
   const notesCollection = weaviateClient.collections.get('Note');
 
   await notesCollection.data.deleteMany(

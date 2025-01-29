@@ -1,5 +1,5 @@
 import React from 'react';
-import weaviate from "weaviate-client";
+import {db} from "../../lib/db";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { NoteCard } from "@/components/NoteCard";
@@ -14,7 +14,7 @@ type Note = {
 // Asynchronous function for fetching the Weaviate notes from the database
 // Because this page is a server component, this fetching will happen on the server
 const fetchNotes = async (searchQuery?: string): Promise<Note[]> => {
-  const weaviateClient = await weaviate.connectToLocal();
+  const weaviateClient = await db.connect();
   const notesCollection = weaviateClient.collections.get('Note');
 
   function getQueryResponse(searchQuery?: string) {

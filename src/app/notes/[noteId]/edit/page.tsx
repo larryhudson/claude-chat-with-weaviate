@@ -1,8 +1,8 @@
-import weaviate from "weaviate-client";
+import {db} from "@/lib/db";
 import EditNoteForm from "@/components/EditNoteForm";
 
 async function getNoteData(noteId: string) {
-    const weaviateClient = await weaviate.connectToLocal();
+    const weaviateClient = await db.connect();
     const notesCollection = weaviateClient.collections.get('Note');
     const note = await notesCollection.query.fetchObjectById(noteId);
     if (!note) {
