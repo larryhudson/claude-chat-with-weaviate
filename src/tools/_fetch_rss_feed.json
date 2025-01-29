@@ -1,0 +1,19 @@
+{
+    "name": "fetch_rss_feed",
+    "description": "Fetches RSS feed and returns recent articles.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "feedUrl": {
+          "type": "string",
+          "description": "URL of the RSS feed"
+        },
+        "maxArticles": {
+          "type": "number",
+          "description": "Maximum number of recent articles to fetch (default: 5)",
+          "default": 5
+        }
+      },
+      "required": ["feedUrl"]
+    }
+  }

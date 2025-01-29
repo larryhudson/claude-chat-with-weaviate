@@ -1,0 +1,14 @@
+{
+    "name": "extract_youtube_transcript",
+    "description": "Extract transcript from a YouTube video URL",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "videoUrl": {
+          "type": "string",
+          "description": "URL of the YouTube video"
+        }
+      },
+      "required": ["videoUrl"]
+    }
+  }

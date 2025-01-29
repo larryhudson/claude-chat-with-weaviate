@@ -1,0 +1,14 @@
+{
+    "name": "search_notes",
+    "description": "Search notes for a query",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Query to search notes for"
+        }
+      },
+      "required": ["query"]
+    }
+  }

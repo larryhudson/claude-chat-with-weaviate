@@ -1,0 +1,14 @@
+{
+    "name": "get_html_for_url",
+    "description": "Retrieve the full HTML response for a URL.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL to retrieve content for"
+        }
+      },
+      "required": ["url"]
+    }
+  }

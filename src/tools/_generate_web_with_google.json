@@ -1,0 +1,25 @@
+{
+    "name": "search_web_with_google",
+    "description": "Search web for a query with Google. When using these results, return hyperlinks in Markdown format.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Query to search for. Use \"site:\" followed by a domain to filter by domain."
+        },
+        "searchType": {
+          "type": "string",
+          "description": "Type of search to perform. Use the default unless a specific search type is necessary",
+          "enum": ["search", "images", "videos", "places", "maps", "news", "shopping", "scholar", "patents"],
+          "default": "search"
+        },
+        "timeRange": {
+          "type": "string",
+          "description": "The time range to find articles published in",
+          "enum": ["day", "week", "month", "year"]
+        }
+      },
+      "required": ["topic"]
+    }
+  }

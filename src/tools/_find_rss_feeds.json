@@ -1,0 +1,14 @@
+{
+    "name": "find_rss_feeds",
+    "description": "Find linked RSS feeds on a given website.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL of the website to search for RSS feed"
+        }
+      },
+      "required": ["url"]
+    }
+  }

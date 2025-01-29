@@ -1,0 +1,9 @@
+{
+    "name": "delete_all_notes",
+    "description": "Delete all notes. Only do this if the user has explicitly told you to do so.",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  }
