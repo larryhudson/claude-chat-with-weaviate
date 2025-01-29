@@ -12,7 +12,7 @@ services:
       - --scheme
       - http
     ports:
-      - $WEB_PORT:8080
+      - $WEAVIATE_PORT:8080
       - 50051:50051
     volumes:
       - ./weaviate_data:/var/lib/weaviate

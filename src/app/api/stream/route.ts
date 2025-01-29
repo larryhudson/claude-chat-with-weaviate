@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from "@anthropic-ai/sdk";
 import { toolDefinitions, toolHandlers } from '@/lib/tools';
-import { MessageParam, RawContentBlockDeltaEvent, RawMessageStreamEvent, TextDelta } from '@anthropic-ai/sdk/resources/messages.mjs';
+import { MessageParam, RawContentBlockDeltaEvent, RawMessageStreamEvent, TextDelta, ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
 
 const anthropic = new Anthropic();
 
@@ -21,13 +21,12 @@ async function processMessages(initialMessages: MessageParam[], controller: any)
     const newMessages: MessageParam[] = [];
 
     let stopReason;
-    do {
-
+    do {        
         const messageStream = anthropic.messages.stream({
             messages: [...initialMessages, ...newMessages],
             max_tokens: 4096,
             model: 'claude-3-5-sonnet-20240620',
-            tools: toolDefinitions,
+            tools: toolDefinitions(),
             system: systemPrompt
         });
 
@@ -54,7 +53,7 @@ async function processMessages(initialMessages: MessageParam[], controller: any)
 
         stopReason = claudeResponse.stop_reason;
         if (stopReason === 'tool_use') {
-            const toolUseContentBlocks: any[] = claudeResponse.content.filter(block => block.type === "tool_use");
+            const toolUseContentBlocks: (ToolUseBlock & { input: any })[] = claudeResponse.content.filter(block => block.type === "tool_use");
 
             if (toolUseContentBlocks.length === 0) {
                 throw new Error("No tool_use content block found in message");
