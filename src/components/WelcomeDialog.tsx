@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link"
 import { Code, Play } from "lucide-react";
 
-const WelcomeDialog = ({ isOpen, onClose }) => {
+const WelcomeDialog = ({ isOpen, onClose } : { isOpen: boolean, onClose: (event: any) => void }) => {
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent>

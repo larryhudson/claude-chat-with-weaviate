@@ -10,7 +10,7 @@ dotenv.config({
 async function main() {  
   const client = await weaviate.connectToLocal({
     host: process.env.WEAVIATE_HOST || 'localhost',
-    port: parseInt(process.env.WEAVIATE_PORT)
+    port: parseInt(process.env.WEAVIATE_PORT || '8080')
   });
 
   const noteCollectionSchema: CollectionConfigCreate<Properties, string> = {

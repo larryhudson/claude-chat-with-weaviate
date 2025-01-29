@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, MouseEventHandler } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Markdown from "react-markdown";
@@ -11,7 +11,7 @@ import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MessageParam } from '@anthropic-ai/sdk/resources/messages.mjs';
 
-const ErrorAlert = ({ message }) => (
+const ErrorAlert = ({ message } : { message: string }) => (
     <Alert variant="destructive" className="mt-4 border-red-600 bg-red-50">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle className="text-red-800">Error</AlertTitle>
@@ -21,7 +21,7 @@ const ErrorAlert = ({ message }) => (
     </Alert>
 );
 
-const ToolSection = ({ icon: Icon, title, content }) => {
+const ToolSection = ({ icon: Icon, title, content } : { icon: any, title: string, content: string }) => {
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (
@@ -48,27 +48,30 @@ const ToolSection = ({ icon: Icon, title, content }) => {
     );
 };
 
-const ChatMessage = ({ message, isLoading = false, showDeleteButton = null, onDeleteMessage = null }) => {
+type ChatContentType = { name?: string, input?: string, content?: string, type: string, text: string };
+type ChatMessageProps = { message: { role: string, content: ChatContentType[] }, isLoading: boolean, showDeleteButton: boolean, onDeleteMessage?: MouseEventHandler<any> | undefined};
+
+const ChatMessage = ({ message, isLoading = false, showDeleteButton = false, onDeleteMessage = undefined } : ChatMessageProps) => {
     const { role, content } = message;
     const isUser = role === "user";
 
     return (
         <Card className={`mb-4 ${isUser ? 'ml-auto bg-blue-100' : 'mr-auto'} max-w-[75%] shadow-lg`}>
             <CardContent className="p-4 space-y-4">
-                {message.content.map((contentBlock, index) => (
+                {message.content.map((contentBlock: ChatContentType, index) => (
                     contentBlock.type === 'tool_use' ? (
                         <ToolSection
                             key={index}
                             icon={Settings}
                             title={`Using tool: ${contentBlock.name}`}
-                            content={contentBlock.input}
+                            content={contentBlock.input as string}
                         />
                     ) : contentBlock.type === 'tool_result' ? (
                         <ToolSection
                             key={index}
                             icon={CheckCircle}
                             title="Tool result"
-                            content={contentBlock.content}
+                            content={contentBlock.content as string}
                         />
                     ) : (
                         <Markdown key={index} className="prose">
@@ -98,7 +101,7 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
     const [streamingContent, setStreamingContent] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const messagesEndRef = useRef(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
     const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(true);
 
     // Show welcome dialog if there are no notes, and the dialog has not been seen before.
@@ -129,6 +132,10 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
                 const errorData = await streamResponse.json();
                 console.error('Error opening stream:', errorData);
                 setError(errorData.message);
+                return;
+            }
+
+            if(!streamResponse.body){
                 return;
             }
 
@@ -213,11 +220,11 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
                 <CardContent className="flex-grow">
                     <div className="h-[75vh] p-4 overflow-auto">
                         <div>
-                            {messages.map((msg, index) => (
-                                <ChatMessage key={index} message={msg} showDeleteButton={!!error} onDeleteMessage={() => deleteMessageByIndex(index)} />
+                            {messages.map((msg: any, index) => (
+                                <ChatMessage isLoading={false} key={index} message={msg} showDeleteButton={!!error} onDeleteMessage={() => deleteMessageByIndex(index)} />
                             ))}
                             {streamingContent && (
-                                <ChatMessage message={{ role: "assistant", content: [{ type: "text", text: streamingContent }] }} isLoading={true} />
+                                <ChatMessage showDeleteButton={false} message={{ role: "assistant", content: [{ type: "text", text: streamingContent }] }} isLoading={true} />
                             )}
                             {error && <ErrorAlert message={error} />}
                             <div ref={messagesEndRef} />

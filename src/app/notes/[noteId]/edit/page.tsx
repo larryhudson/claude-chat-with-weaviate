@@ -11,7 +11,7 @@ async function getNoteData(noteId: string) {
     return note.properties;
 }
 
-export default async function EditNotePage({ params }) {
+export default async function EditNotePage({ params } : { params: { noteId: string } }) {
     const noteId = params.noteId;
     const noteData = await getNoteData(noteId);
     return <EditNoteForm noteId={noteId} initialData={noteData} />;

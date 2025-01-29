@@ -20,15 +20,22 @@ export const generateRandomNumber = async ({ min, max }: { min: number; max: num
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+type TimeRangeOpts = {
+  day: string,
+  week: string,
+  month: string,
+  year: string,
+}
+
 export const searchWebWithGoogle = async ({ query, searchType = 'search', timeRange }: { query: string; searchType?: string; timeRange?: string }): Promise<any> => {
-  const timeRangeOptions = {
+  const timeRangeOptions: TimeRangeOpts = {
     'day': 'qdr:d',
     'week': 'qdr:w',
     'month': 'qdr:m',
     'year': 'qdr:y',
   };
 
-  const timeRangeValue = timeRangeOptions[timeRange] || undefined;
+  const timeRangeValue = timeRangeOptions[timeRange as keyof TimeRangeOpts] || undefined;
 
   const serperUrl = `https://google.serper.dev/${searchType}`;
   const searchOptions = {
@@ -43,7 +50,7 @@ export const searchWebWithGoogle = async ({ query, searchType = 'search', timeRa
     headers: {
       'X-API-KEY': process.env.SERPER_API_KEY,
       'Content-Type': 'application/json'
-    }
+    } as any
   });
 
   if (!response.ok) {
@@ -70,6 +77,15 @@ export const getMarkdownForUrl = async ({ url }: { url: string }): Promise<strin
   return await response.text();
 };
 
+type ArticleType = {
+  title: string,
+  content: string,
+  textContent: string,
+  excerpt: string,
+  byline: string,
+  length: number
+}
+
 export const getReadableContentForUrl = async ({ url }: { url: string }): Promise<any> => {
   const browser = await chromium.launch({
     headless: false,
@@ -88,11 +104,13 @@ export const getReadableContentForUrl = async ({ url }: { url: string }): Promis
     await page.evaluate(() => {
       const cookieButtons: NodeListOf<HTMLLinkElement> = document.querySelectorAll('button, a, span');
       for (const button of cookieButtons) {
-        if (button.textContent.toLowerCase().includes('accept') ||
-          button.textContent.toLowerCase().includes('agree') ||
-          button.textContent.toLowerCase().includes('ok')) {
-          button.click();
-          return;
+        if(button.textContent){        
+          if (button.textContent.toLowerCase().includes('accept') ||
+            button.textContent.toLowerCase().includes('agree') ||
+            button.textContent.toLowerCase().includes('ok')) {
+            button.click();
+            return;
+          }
         }
       }
     });
@@ -103,7 +121,7 @@ export const getReadableContentForUrl = async ({ url }: { url: string }): Promis
 
     const doc = new JSDOM(content);
     const reader = new Readability(doc.window.document);
-    const article = reader.parse();
+    const article = reader.parse() as unknown as ArticleType;
 
     return {
       title: article.title,

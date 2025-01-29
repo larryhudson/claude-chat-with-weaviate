@@ -4,7 +4,7 @@ export const db = {
     connect: async (): Promise<WeaviateClient> => {        
         return await weaviate.connectToLocal({
             host: process.env.WEAVIATE_HOST || 'localhost',
-            port: parseInt(process.env.WEAVIATE_PORT)
+            port: parseInt(process.env.WEAVIATE_PORT || '8080')
         });
     }
 }
