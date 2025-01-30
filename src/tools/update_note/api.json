@@ -1,5 +1,4 @@
-{
-    "name": "update_note",
+{    
     "description": "Update an existing note with content and context. Use this if the information in a note is outdated.",
     "input_schema": {
       "type": "object",

@@ -1,5 +1,4 @@
-{
-    "name": "find_rss_feeds",
+{    
     "description": "Find linked RSS feeds on a given website.",
     "input_schema": {
       "type": "object",

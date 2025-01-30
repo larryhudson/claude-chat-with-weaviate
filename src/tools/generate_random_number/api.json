@@ -1,5 +1,4 @@
-{
-  "name": "generate_random_number",
+{  
   "description": "Generate a random number between the minimum and maximum values",
   "input_schema": {
     "type": "object",

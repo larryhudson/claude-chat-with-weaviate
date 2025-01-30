@@ -1,5 +1,4 @@
-{
-    "name": "search_notes",
+{    
     "description": "Search notes for a query",
     "input_schema": {
       "type": "object",

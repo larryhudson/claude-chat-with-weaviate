@@ -1,15 +1,16 @@
 "use client";
 import React, { useState, useEffect, useRef, MouseEventHandler, KeyboardEvent } from 'react';
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Markdown from "react-markdown";
 import { Textarea } from '@/components/ui/textarea';
-import WelcomeDialog from '@/components/WelcomeDialog';
-import { Settings, CheckCircle, ChevronDown, ChevronUp, LoaderCircle, HelpCircle, SendIcon } from 'lucide-react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+
+import { Settings, CheckCircle, LoaderCircle, SendIcon } from 'lucide-react';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MessageParam } from '@anthropic-ai/sdk/resources/messages.mjs';
+import ToolSection from './ToolSection';
+import { getNormalizedToolName } from '../tools/shared'
 
 const ErrorAlert = ({ message } : { message: string }) => (
     <Alert variant="destructive" className="mt-4 border-red-600 bg-red-50">
@@ -21,32 +22,7 @@ const ErrorAlert = ({ message } : { message: string }) => (
     </Alert>
 );
 
-const ToolSection = ({ icon: Icon, title, content } : { icon: any, title: string, content: string }) => {
-    const [isOpen, setIsOpen] = React.useState(false);
 
-    return (
-        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-2">
-            <div className="flex items-center justify-between p-2 bg-gray-100 rounded-t-md">
-                <div className="flex items-center text-gray-600">
-                    <Icon className="mr-2" size={16} />
-                    <strong>{title}</strong>
-                </div>
-                <CollapsibleTrigger asChild>
-                    <button className="hover:bg-gray-200 p-1 rounded">
-                        {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </button>
-                </CollapsibleTrigger>
-            </div>
-            <CollapsibleContent className="p-2 bg-white border border-t-0 border-gray-200 rounded-b-md">
-                <div className="prose">
-                    <pre className="whitespace-pre-wrap">
-                        {JSON.stringify(content, null, 2)}
-                    </pre>
-                </div>
-            </CollapsibleContent>
-        </Collapsible>
-    );
-};
 
 type ChatContentType = { name?: string, input?: string, content?: string, type: string, text: string };
 type ChatMessageProps = { message: { role: string, content: ChatContentType[] }, isLoading: boolean, showDeleteButton: boolean, onDeleteMessage?: MouseEventHandler<any> | undefined};
@@ -54,6 +30,10 @@ type ChatMessageProps = { message: { role: string, content: ChatContentType[] },
 const ChatMessage = ({ message, isLoading = false, showDeleteButton = false, onDeleteMessage = undefined } : ChatMessageProps) => {
     const { role, content } = message;
     const isUser = role === "user";
+
+    useEffect(() => {
+
+    }, []);
     
     return (
         <Card className={`mb-4 ${isUser ? 'ml-auto bg-blue-100' : 'mr-auto'} max-w-[75%] shadow-lg`}>
@@ -63,7 +43,7 @@ const ChatMessage = ({ message, isLoading = false, showDeleteButton = false, onD
                         <ToolSection
                             key={index}
                             icon={Settings}
-                            title={`Using tool: ${contentBlock.name}`}
+                            title={`Using tool: ${getNormalizedToolName(contentBlock.name || '')}`}
                             content={contentBlock.input as string}
                         />
                     ) : contentBlock.type === 'tool_result' ? (
@@ -71,7 +51,7 @@ const ChatMessage = ({ message, isLoading = false, showDeleteButton = false, onD
                             key={index}
                             icon={CheckCircle}
                             title="Tool result"
-                            content={contentBlock.content as string}
+                            content={contentBlock.content}
                         />
                     ) : (
                         <Markdown key={index} className="prose">

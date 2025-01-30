@@ -1,5 +1,4 @@
-{
-    "name": "get_html_for_url",
+{    
     "description": "Retrieve the full HTML response for a URL.",
     "input_schema": {
       "type": "object",

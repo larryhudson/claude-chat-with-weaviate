@@ -1,5 +1,4 @@
-{
-    "name": "fetch_rss_feed",
+{    
     "description": "Fetches RSS feed and returns recent articles.",
     "input_schema": {
       "type": "object",

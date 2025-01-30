@@ -1,0 +1,28 @@
+{    
+   "description": "Get files from a GitHub repository with optional path specification",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "repo": {
+                "type": "string",
+                "description": "The GitHub repository in format 'owner/repo'"
+            },
+            "path": {
+                "type": "string",
+                "description": "Optional path within the repository to fetch files from",
+                "optional": true
+            },
+            "include_content": {
+                "type": "boolean",
+                "description": "Optional variable that enables content download in the returned files",                
+                "optional": true
+            },
+            "branch": {
+                "type": "string",
+                "description": "GitHub repo branch",                
+                "optional": true
+            }
+        },
+        "required": ["repo"]
+    }
+}

@@ -1,5 +1,4 @@
-{
-    "name": "search_web_with_google",
+{    
     "description": "Search web for a query with Google. When using these results, return hyperlinks in Markdown format.",
     "input_schema": {
       "type": "object",

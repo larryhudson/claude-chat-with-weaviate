@@ -4,28 +4,42 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { ClaudeWeaverTool } from "./tool";
 
-export const toolDefinitions: () => Tool[] = () => {
-  const __filename = fileURLToPath(import.meta.url);  
-  const toolsDir = path.dirname(__filename);
+type InstancedToolDef = Tool & { _tool?: ClaudeWeaverTool<any, any> };
+type ClaudeWeaverToolConstructor = new (toolName: string) => ClaudeWeaverTool<any, any>;
 
-  const tools: Tool[] = fs.readdirSync(toolsDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => JSON.parse(
-        fs.readFileSync(
-          path.join(toolsDir, dirent.name, `api.json`), 
-          'utf-8'
-        )
-    ));
+export const toolDefinitions: (instanced?: boolean) => Promise<InstancedToolDef[]> = 
+  async (instanced = false) => {
+    const __filename = fileURLToPath(import.meta.url);  
+    const toolsDir = path.dirname(__filename);
 
-  return tools;
-};
+    const dirents = fs.readdirSync(toolsDir, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory());
 
-type ClaudeWeaverToolConstructor = new () => ClaudeWeaverTool<any, any>;
+    const tools: InstancedToolDef[] = await Promise.all(
+      dirents.map(async (dirent) => {
+        const tool = await makeTool(dirent.name);  
+        if(instanced){    
+          return {_tool: tool, ...tool.getApi()};
+        }
+
+        return tool.getApi();
+      })
+    );
+
+    return tools;
+  }
+;
+
+const makeTool = async (toolName: string): Promise<ClaudeWeaverTool<any,any>> => {
+  const TheTool: ClaudeWeaverToolConstructor = (await import(`@/tools/${toolName}/tool.ts`)).default;
+  return new TheTool(toolName);
+}
 
 export const toolHandler = async (toolName: string): Promise<ClaudeWeaverTool<any,any> | null>  => {  
-  if(toolDefinitions().map(((item: Tool) => item.name)).includes(toolName)){    
-    const TheTool: ClaudeWeaverToolConstructor = (await import(`@/tools/${toolName}/tool.ts`)).default;
-    return new TheTool();
+  const toolDef: InstancedToolDef  | null = (await toolDefinitions(true)).find((item: Tool) => item.name === toolName) || null;
+
+  if(toolDef && toolDef._tool){      
+    return toolDef._tool;
   }
   
   return null;

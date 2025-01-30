@@ -1,5 +1,4 @@
-{
-    "name": "extract_youtube_transcript",
+{    
     "description": "Extract transcript from a YouTube video URL",
     "input_schema": {
       "type": "object",

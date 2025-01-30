@@ -1,5 +1,4 @@
-{
-    "name": "get_markdown_for_url",
+{    
     "description": "Retrieve the full text content for a URL as Markdown.",
     "input_schema": {
         "type": "object",

@@ -1,5 +1,4 @@
-{
-    "name": "get_readable_content_for_url",
+{    
     "description": "Retrieve the main content of a webpage using Playwright and Readability",
     "input_schema": {
       "type": "object",

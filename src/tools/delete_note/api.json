@@ -1,5 +1,4 @@
-{
-    "name": "delete_note",
+{    
     "description": "Delete a note with id. Only do this if the user has told you to forget about something.",
     "input_schema": {
       "type": "object",

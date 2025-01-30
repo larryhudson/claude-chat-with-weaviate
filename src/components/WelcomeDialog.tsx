@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useEffect, useState } from 'react';
+import React, {  useEffect, useState } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link"
 import { Code, Play } from "lucide-react";
 import { Tool } from '@anthropic-ai/sdk/resources/messages.mjs';
+import { getNormalizedToolName } from '../tools/shared';
 
 const WelcomeDialog = ({ isOpen, onClose } : { isOpen: boolean,onClose: (event: any) => void }) => {
     const [tools, setTools] =  useState<Tool[]>([]);
@@ -24,6 +25,8 @@ const WelcomeDialog = ({ isOpen, onClose } : { isOpen: boolean,onClose: (event: 
             if (!data.success) {
                 throw new Error(data.error || 'Failed to fetch tools');
             }
+
+            console.log('fetchTools',data.tools);
 
             setTools(data.tools);
         } catch (err: any) {
@@ -59,10 +62,9 @@ const WelcomeDialog = ({ isOpen, onClose } : { isOpen: boolean,onClose: (event: 
                 <strong>Available tools:</strong>
 
                 <ul className='tools-list prose'>
-                    {tools.map((tool, index) => {
-                        const toolName = tool.name.replace(/_/g, ' ');
+                    {tools.map((tool, index) => {                        
                         return (<li key={index}>
-                            <h4>{toolName.charAt(0).toUpperCase() + toolName.slice(1)}</h4>
+                            <h4>{getNormalizedToolName(tool.name, true)}</h4>
                             <p>{tool.description}</p>
                         </li>)
                     })}

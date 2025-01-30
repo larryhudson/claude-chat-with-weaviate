@@ -1,5 +1,4 @@
-{
-    "name": "add_note",
+{    
     "description": "Add a note with content and context",
     "input_schema": {
       "type": "object",

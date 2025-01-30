@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from "@anthropic-ai/sdk";
 import { toolDefinitions, toolHandler } from '@/lib/tools';
 import { MessageParam, RawContentBlockDeltaEvent, RawMessageStreamEvent, TextDelta, ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
+import { ClaudeWeaverTool } from '@/tools/tool';
 
 const anthropic = new Anthropic();
 
@@ -26,7 +27,7 @@ async function processMessages(initialMessages: MessageParam[], controller: any)
             messages: [...initialMessages, ...newMessages],
             max_tokens: 4096,
             model: 'claude-3-5-sonnet-20240620',
-            tools: toolDefinitions(),
+            tools: await toolDefinitions(),
             system: systemPrompt
         });
 
@@ -68,7 +69,7 @@ async function processMessages(initialMessages: MessageParam[], controller: any)
                 }
 
                 try {
-                    const toolOutput = await toolInstance.execute(toolUseContentBlock.input);
+                    const toolOutput: ClaudeWeaverTool<typeof toolUseContentBlock.input, any> = await toolInstance.execute(toolUseContentBlock.input);
                     toolResultContentBlocks.push({
                         type: 'tool_result',
                         tool_use_id: toolUseContentBlock.id,
