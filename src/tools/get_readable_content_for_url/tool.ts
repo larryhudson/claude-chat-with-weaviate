@@ -1,4 +1,4 @@
-import { ClaudeWeaverTool } from "./_tool"
+import { ClaudeWeaverTool } from "../tool"
 import { chromium } from "playwright";
 import { JSDOM } from "jsdom";
 import { Readability } from "@mozilla/readability";

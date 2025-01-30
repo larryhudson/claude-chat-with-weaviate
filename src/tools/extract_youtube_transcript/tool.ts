@@ -1,4 +1,4 @@
-import { ClaudeWeaverTool } from "./_tool"
+import { ClaudeWeaverTool } from "../tool"
 import { YoutubeTranscript } from 'youtube-transcript';
 
 interface ExtractYouTubeTranscriptionToolParams {

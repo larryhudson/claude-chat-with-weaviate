@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
-import { ClaudeWeaverTool } from "./_tool"
+import { ClaudeWeaverTool } from "../tool"
 
 export default class DeleteAllNotesTool extends ClaudeWeaverTool<{}, void> {
     async execute(params: {} = {}): Promise<void> {
-        const weaviateClient = await db.connect();
+        const weaviateClient = await this.getDb();
         const notesCollection = weaviateClient.collections.get('Note');
 
         await notesCollection.data.deleteMany(

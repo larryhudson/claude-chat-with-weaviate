@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { ClaudeWeaverTool } from "./_tool"
+import { ClaudeWeaverTool } from "../tool"
 
 interface UpdateNoteToolParams {
    id: string; content: string; context: string
@@ -7,7 +7,7 @@ interface UpdateNoteToolParams {
 
 export default class UpdateNoteTool extends ClaudeWeaverTool<UpdateNoteToolParams, any> {
     public async execute({ id, content, context}: UpdateNoteToolParams): Promise<any> {
-        const weaviateClient = await db.connect();
+        const weaviateClient = await this.getDb();
         const notesCollection = weaviateClient.collections.get('Note');
       
         await notesCollection.data.update({

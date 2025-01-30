@@ -1,4 +1,4 @@
-import { ClaudeWeaverTool } from "./_tool"
+import { ClaudeWeaverTool } from "../tool"
 import Parser from 'rss-parser';
 
 interface FetchRSSToolParams {

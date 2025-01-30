@@ -1,4 +1,4 @@
-import { ClaudeWeaverTool } from "./_tool"
+import { ClaudeWeaverTool } from "../tool"
 
 export interface GenerateRandomNumberToolParams { 
     min: number; 

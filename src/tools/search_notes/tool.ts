@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { ClaudeWeaverTool } from "./_tool"
+import { ClaudeWeaverTool } from "../tool"
 
 interface SearchNotesToolParams {
     query: string
@@ -8,7 +8,7 @@ interface SearchNotesToolParams {
 export default class SearchNotesTool extends ClaudeWeaverTool<SearchNotesToolParams, any>
 {
     async execute({query}: SearchNotesToolParams): Promise<any> {
-        const weaviateClient = await db.connect();
+        const weaviateClient = await this.getDb();
         const notesCollection = weaviateClient.collections.get('Note');
     
         const queryResponse = await notesCollection.query.hybrid(query, {
