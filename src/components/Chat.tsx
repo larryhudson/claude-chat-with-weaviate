@@ -1,11 +1,11 @@
 "use client";
-import React, { useState, useEffect, useRef, MouseEventHandler } from 'react';
+import React, { useState, useEffect, useRef, MouseEventHandler, KeyboardEvent } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Markdown from "react-markdown";
 import { Textarea } from '@/components/ui/textarea';
 import WelcomeDialog from '@/components/WelcomeDialog';
-import { Settings, CheckCircle, ChevronDown, ChevronUp, LoaderCircle } from 'lucide-react';
+import { Settings, CheckCircle, ChevronDown, ChevronUp, LoaderCircle, HelpCircle, SendIcon } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -54,7 +54,7 @@ type ChatMessageProps = { message: { role: string, content: ChatContentType[] },
 const ChatMessage = ({ message, isLoading = false, showDeleteButton = false, onDeleteMessage = undefined } : ChatMessageProps) => {
     const { role, content } = message;
     const isUser = role === "user";
-
+    
     return (
         <Card className={`mb-4 ${isUser ? 'ml-auto bg-blue-100' : 'mr-auto'} max-w-[75%] shadow-lg`}>
             <CardContent className="p-4 space-y-4">
@@ -100,22 +100,8 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
     const [inputMessage, setInputMessage] = useState('');
     const [streamingContent, setStreamingContent] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(true);
-
-    // Show welcome dialog if there are no notes, and the dialog has not been seen before.
-    useEffect(() => {
-        const hasShownWelcomeDialog = localStorage.getItem('has-seen-welcome-dialog') === 'true';
-        if (initialNotesCount === 0 && !hasShownWelcomeDialog) {
-            setIsWelcomeModalOpen(true);
-        }
-    }, [initialNotesCount]);
-
-    const handleCloseWelcomeDialog = () => {
-        setIsWelcomeModalOpen(false);
-        localStorage.setItem('has-seen-welcome-dialog', 'true');
-    };
+    const [error, setError] = useState<string | null>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);   
 
     const sendMessages = async (messages: MessageParam[]) => {
         setError(null);
@@ -211,11 +197,7 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
     }
 
     return (
-        <>
-            <WelcomeDialog
-                isOpen={isWelcomeModalOpen}
-                onClose={handleCloseWelcomeDialog}
-            />
+        <>      
             <Card className="bg-gray-100 w-full h-full flex flex-col mx-auto">
                 <CardContent className="flex-grow">
                     <div className="h-[75vh] p-4 overflow-auto">
@@ -232,7 +214,7 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
                     </div>
                 </CardContent>
                 <CardFooter className="">
-                    <form onSubmit={(e) => { e.preventDefault(); sendNewMessage(); }} className="flex w-full space-x-2">
+                    <form onKeyDown={(e: KeyboardEvent) => { if(e.key ==  'Enter' && !e.shiftKey){ e.preventDefault(); sendNewMessage(); }}} onSubmit={(e) => { e.preventDefault(); sendNewMessage(); }} className="flex w-full space-x-2">
                         <Textarea
                             placeholder="Type a message..."
                             value={inputMessage}
@@ -240,7 +222,7 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
                             disabled={isLoading}
                         />
                         <Button type="submit" disabled={isLoading}>
-                            Send
+                            <SendIcon className='mr-1'></SendIcon>Send
                         </Button>
                         {error && (
                             <Button type="button" onClick={() => sendMessages(messages)} >

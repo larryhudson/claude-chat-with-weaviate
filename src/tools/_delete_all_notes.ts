@@ -1,0 +1,5 @@
+import { ClaudeWeaverTool } from "./_tool"
+
+export default class DeleteAllNotesTool extends ClaudeWeaverTool {
+
+}

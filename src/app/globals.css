@@ -79,3 +79,26 @@ html {
   height: 100%;
 }
 
+
+.tools-list {
+  margin: 15px 0;
+}
+
+.tools-list li {
+  border-bottom: 1px solid #333;
+  margin-bottom: 15px;
+}
+
+.tools-list li h4{
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.tools-list li p{
+  padding: 10px;
+}
+
+.scrollable {
+  max-height: 90vh;
+  overflow-y: scroll;
+}

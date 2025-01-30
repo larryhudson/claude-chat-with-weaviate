@@ -6,7 +6,7 @@ import { YoutubeTranscript } from 'youtube-transcript';
 import { chromium } from "playwright";
 import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
-import { Tool } from "@anthropic-ai/sdk/resources/messages.mjs";
+import { fileURLToPath } from 'url';
 
 // Helper function to format time
 export function formatTime(milliseconds: number): string {
@@ -262,6 +262,7 @@ export const extractYoutubeTranscript = async ({ videoUrl }: { videoUrl: string 
 };
 
 export { toolDefinitions } from "@/tools";
+
 
 export const toolHandlers = {
   generate_random_number: generateRandomNumber,

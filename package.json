@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "init": "tsx scripts/init.ts",
+    "db:start": "docker-compose --env-file=.env.local up -d",
+    "db:stop": "docker-compose --env-file=.env.local stop",
     "postinstall": "npm run init && npm run build"
   },
   "dependencies": {
