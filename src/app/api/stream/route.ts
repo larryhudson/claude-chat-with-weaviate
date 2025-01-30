@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from "@anthropic-ai/sdk";
-import { toolDefinitions, toolHandlers } from '@/lib/tools';
+import { toolDefinitions, toolHandler } from '@/lib/tools';
 import { MessageParam, RawContentBlockDeltaEvent, RawMessageStreamEvent, TextDelta, ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
 
 const anthropic = new Anthropic();
@@ -62,13 +62,13 @@ async function processMessages(initialMessages: MessageParam[], controller: any)
             const toolResultContentBlocks = [];
             for (const toolUseContentBlock of toolUseContentBlocks) {
                 const toolName = toolUseContentBlock.name;
-                const toolHandler = toolHandlers[toolName as keyof typeof toolHandlers];
-                if (!toolHandler) {
+                const toolInstance = await toolHandler(toolName);
+                if (!toolInstance) {
                     throw new Error(`No handler found for tool ${toolName}`);
                 }
 
                 try {
-                    const toolOutput = await toolHandler(toolUseContentBlock.input);
+                    const toolOutput = await toolInstance.execute(toolUseContentBlock.input);
                     toolResultContentBlocks.push({
                         type: 'tool_result',
                         tool_use_id: toolUseContentBlock.id,

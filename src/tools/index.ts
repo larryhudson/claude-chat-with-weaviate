@@ -11,12 +11,13 @@ export const toolDefinitions: () => Tool[] = () => {
     .map(file => JSON.parse(readFileSync(path.join(path.dirname(__filename), file), 'utf-8')))
 };
 
-export const toolHandler = async (toolName: string) => {
-  const __filename = fileURLToPath(import.meta.url);  
-  
-  if(!toolDefinitions().map(((item: Tool) => item.name)).includes(toolName)){    
-    const tool: ClaudeWeaverTool = (await import(path.resolve(path.dirname(__filename), `_${toolName}`))).default;
+type ClaudeWeaverToolConstructor = new () => ClaudeWeaverTool<any, any>;
 
-    console.log({tool})
+export const toolHandler = async (toolName: string): Promise<ClaudeWeaverTool<any,any> | null>  => {  
+  if(toolDefinitions().map(((item: Tool) => item.name)).includes(toolName)){    
+    const TheTool: ClaudeWeaverToolConstructor = (await import(`@/tools/_${toolName}`)).default;    
+    return new TheTool();
   }
+  
+  return null;
 }
