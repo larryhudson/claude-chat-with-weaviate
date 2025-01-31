@@ -1,7 +1,6 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import weaviate from "weaviate-client";
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -11,13 +10,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 
 import { updateNote } from "@/actions";
+import { WeaviateField } from 'weaviate-client';
 
 const formSchema = z.object({
     content: z.string().min(1, "Content is required"),
     context: z.string().min(1, "Context is required"),
 })
 
-export default function EditNoteForm({ noteId, initialData }) {
+export default function EditNoteForm({ noteId, initialData } : {  noteId: string, initialData: any}) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -29,7 +29,7 @@ export default function EditNoteForm({ noteId, initialData }) {
         },
     });
 
-    async function onSubmit(values) {
+    async function onSubmit(values: any) {
         setIsLoading(true);
 
         try {

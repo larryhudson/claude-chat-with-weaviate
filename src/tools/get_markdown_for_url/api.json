@@ -1,0 +1,13 @@
+{    
+    "description": "Retrieve the full text content for a URL as Markdown.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+        "url": {
+            "type": "string",
+            "description": "URL to retrieve content for"
+        }
+        },
+        "required": ["url"]
+    }
+}

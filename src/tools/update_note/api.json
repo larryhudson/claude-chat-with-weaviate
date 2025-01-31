@@ -1,0 +1,21 @@
+{    
+    "description": "Update an existing note with content and context. Use this if the information in a note is outdated.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the note"
+        },
+        "content": {
+          "type": "string",
+          "description": "Content of the note"
+        },
+        "context": {
+          "type": "string",
+          "description": "Conversational context of the note"
+        }
+      },
+      "required": ["id", "content", "context"]
+    }
+  }

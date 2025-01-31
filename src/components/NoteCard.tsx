@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Markdown from "react-markdown";
 
-export function NoteCard({ note }) {
+export function NoteCard({ note } : { note: any }) {
     return (
         <Card key={note.id} className="overflow-hidden">
             <CardContent className="pt-6">

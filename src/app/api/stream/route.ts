@@ -1,23 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from "@anthropic-ai/sdk";
-import { toolDefinitions, toolHandlers } from '@/lib/tools';
+import { toolDefinitions, toolHandler } from '@/lib/tools';
+import { MessageParam, RawContentBlockDeltaEvent, RawMessageStreamEvent, TextDelta, ToolUseBlock } from '@anthropic-ai/sdk/resources/messages.mjs';
+import { ClaudeWeaverTool } from '@/tools/tool';
 
 const anthropic = new Anthropic();
 
 const systemPrompt = `You are a helpful assistant with access to tools that give you extra capabilities. When asked a question that is outside of your training data, use the search_notes tool to find relevant information, including personal information about the user.`
 
-async function processMessages(initialMessages, controller) {
+interface IClaudeStreamChunk {
+    type: string;
+    index?: number;
+    delta?: {
+        type: string;
+        text: string;
+    };
+}
 
-    const newMessages = [];
+async function processMessages(initialMessages: MessageParam[], controller: any) {
+
+    const newMessages: MessageParam[] = [];
 
     let stopReason;
-    do {
-
+    do {        
         const messageStream = anthropic.messages.stream({
             messages: [...initialMessages, ...newMessages],
             max_tokens: 4096,
             model: 'claude-3-5-sonnet-20240620',
-            tools: toolDefinitions,
+            tools: await toolDefinitions(),
             system: systemPrompt
         });
 
@@ -26,14 +36,15 @@ async function processMessages(initialMessages, controller) {
         };
 
         for await (const chunk of messageStream) {
+
             if (chunk.type === 'content_block_start' || chunk.type === 'content_block_delta') {
-                sendEventToBrowser('streaming_message', chunk.delta?.text || '');
+                sendEventToBrowser('streaming_message', ((chunk as RawContentBlockDeltaEvent).delta as TextDelta)?.text || '');
             }
         }
 
         const claudeResponse = await messageStream.finalMessage();
 
-        const assistantMessage = {
+        const assistantMessage: MessageParam = {
             role: 'assistant',
             content: claudeResponse.content
         };
@@ -43,7 +54,7 @@ async function processMessages(initialMessages, controller) {
 
         stopReason = claudeResponse.stop_reason;
         if (stopReason === 'tool_use') {
-            const toolUseContentBlocks = claudeResponse.content.filter(block => block.type === "tool_use");
+            const toolUseContentBlocks: (ToolUseBlock & { input: any })[] = claudeResponse.content.filter(block => block.type === "tool_use");
 
             if (toolUseContentBlocks.length === 0) {
                 throw new Error("No tool_use content block found in message");
@@ -52,19 +63,19 @@ async function processMessages(initialMessages, controller) {
             const toolResultContentBlocks = [];
             for (const toolUseContentBlock of toolUseContentBlocks) {
                 const toolName = toolUseContentBlock.name;
-                const toolHandler = toolHandlers[toolName];
-                if (!toolHandler) {
+                const toolInstance = await toolHandler(toolName);
+                if (!toolInstance) {
                     throw new Error(`No handler found for tool ${toolName}`);
                 }
 
                 try {
-                    const toolOutput = await toolHandler(toolUseContentBlock.input);
+                    const toolOutput: ClaudeWeaverTool<typeof toolUseContentBlock.input, any> = await toolInstance.execute(toolUseContentBlock.input);
                     toolResultContentBlocks.push({
                         type: 'tool_result',
                         tool_use_id: toolUseContentBlock.id,
                         content: JSON.stringify(toolOutput)
                     });
-                } catch (error) {
+                } catch (error: Error | any) {
                     console.error(`Error executing tool ${toolName}:`, error);
                     toolResultContentBlocks.push({
                         type: 'tool_result',
@@ -74,7 +85,7 @@ async function processMessages(initialMessages, controller) {
                 }
             }
 
-            const toolResultMessage = {
+            const toolResultMessage: any = {
                 role: 'user',
                 content: toolResultContentBlocks
             };
@@ -94,7 +105,7 @@ export async function POST(req: NextRequest) {
             try {
                 await processMessages(messages, controller);
                 controller.close();
-            } catch (error) {
+            } catch (error: Error | any) {
                 console.error('Error in stream:', error);
                 controller.enqueue(`data: ${JSON.stringify({ type: 'error', message: error.message })}\n\n`);
                 controller.close();

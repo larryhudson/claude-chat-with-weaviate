@@ -1,11 +1,19 @@
-import weaviate, { generative } from "weaviate-client";
+import weaviate, { generative, CollectionConfigCreate, Properties } from "weaviate-client";
+import dotenv from 'dotenv';
+import path from "path";
+
+dotenv.config({
+  path: path.resolve(__dirname, '..', '.env.local')
+})
 
 // Script for initialising Weaviate vector database
-async function main() {
+async function main() {  
+  const client = await weaviate.connectToLocal({
+    host: process.env.WEAVIATE_HOST || 'localhost',
+    port: parseInt(process.env.WEAVIATE_PORT || '8080')
+  });
 
-  const client = await weaviate.connectToLocal();
-
-  const noteCollectionSchema = {
+  const noteCollectionSchema: CollectionConfigCreate<Properties, string> = {
     name: 'Note',
     properties: [{
       name: 'content',
@@ -21,7 +29,7 @@ async function main() {
     }
     ],
     generative: generative.openAI({
-      model: "gpt-4"
+      model: 'gpt-4'
     })
   }
 

@@ -1,0 +1,13 @@
+{    
+    "description": "Retrieve the main content of a webpage using Playwright and Readability",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "URL of the webpage to extract content from"
+        }
+      },
+      "required": ["url"]
+    }
+  }

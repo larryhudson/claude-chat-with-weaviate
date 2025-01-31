@@ -1,0 +1,17 @@
+{    
+    "description": "Add a note with content and context",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "description": "Content of the note"
+        },
+        "context": {
+          "type": "string",
+          "description": "Conversational context of the note"
+        }
+      },
+      "required": ["content", "context"]
+    }
+  }

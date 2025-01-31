@@ -1,17 +1,18 @@
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import React, { useState, useEffect, useRef, MouseEventHandler, KeyboardEvent } from 'react';
 import { Button } from "@/components/ui/button";
 import Markdown from "react-markdown";
 import { Textarea } from '@/components/ui/textarea';
-import WelcomeDialog from '@/components/WelcomeDialog';
-import { Settings, CheckCircle, ChevronDown, ChevronUp, LoaderCircle } from 'lucide-react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+
+import { Settings, CheckCircle, LoaderCircle, SendIcon } from 'lucide-react';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MessageParam } from '@anthropic-ai/sdk/resources/messages.mjs';
+import ToolSection from './ToolSection';
+import { getNormalizedToolName } from '../tools/shared'
 
-const ErrorAlert = ({ message }) => (
+const ErrorAlert = ({ message } : { message: string }) => (
     <Alert variant="destructive" className="mt-4 border-red-600 bg-red-50">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle className="text-red-800">Error</AlertTitle>
@@ -21,49 +22,33 @@ const ErrorAlert = ({ message }) => (
     </Alert>
 );
 
-const ToolSection = ({ icon: Icon, title, content }) => {
-    const [isOpen, setIsOpen] = React.useState(false);
 
-    return (
-        <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mt-2">
-            <div className="flex items-center justify-between p-2 bg-gray-100 rounded-t-md">
-                <div className="flex items-center text-gray-600">
-                    <Icon className="mr-2" size={16} />
-                    <strong>{title}</strong>
-                </div>
-                <CollapsibleTrigger asChild>
-                    <button className="hover:bg-gray-200 p-1 rounded">
-                        {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </button>
-                </CollapsibleTrigger>
-            </div>
-            <CollapsibleContent className="p-2 bg-white border border-t-0 border-gray-200 rounded-b-md">
-                <div className="prose">
-                    <pre className="whitespace-pre-wrap">
-                        {JSON.stringify(content, null, 2)}
-                    </pre>
-                </div>
-            </CollapsibleContent>
-        </Collapsible>
-    );
-};
 
-const ChatMessage = ({ message, isLoading, showDeleteButton, onDeleteMessage }) => {
+type ChatContentType = { name?: string, input?: string, content?: string, type: string, text: string };
+type ChatMessageProps = { message: { role: string, content: ChatContentType[] }, isLoading: boolean, showDeleteButton: boolean, onDeleteMessage?: MouseEventHandler<any> | undefined};
+
+const ChatMessage = ({ message, isLoading = false, showDeleteButton = false, onDeleteMessage = undefined } : ChatMessageProps) => {
     const { role, content } = message;
     const isUser = role === "user";
 
+    useEffect(() => {
+
+    }, []);
+    
     return (
         <Card className={`mb-4 ${isUser ? 'ml-auto bg-blue-100' : 'mr-auto'} max-w-[75%] shadow-lg`}>
             <CardContent className="p-4 space-y-4">
-                {message.content.map((contentBlock, index) => (
+                {message.content.map((contentBlock: ChatContentType, index) => (
                     contentBlock.type === 'tool_use' ? (
                         <ToolSection
+                            key={index}
                             icon={Settings}
-                            title={`Using tool: ${contentBlock.name}`}
-                            content={contentBlock.input}
+                            title={`Using tool: ${getNormalizedToolName(contentBlock.name || '')}`}
+                            content={contentBlock.input as string}
                         />
                     ) : contentBlock.type === 'tool_result' ? (
                         <ToolSection
+                            key={index}
                             icon={CheckCircle}
                             title="Tool result"
                             content={contentBlock.content}
@@ -95,22 +80,8 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
     const [inputMessage, setInputMessage] = useState('');
     const [streamingContent, setStreamingContent] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const messagesEndRef = useRef(null);
-    const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(true);
-
-    // Show welcome dialog if there are no notes, and the dialog has not been seen before.
-    useEffect(() => {
-        const hasShownWelcomeDialog = localStorage.getItem('has-seen-welcome-dialog') === 'true';
-        if (initialNotesCount === 0 && !hasShownWelcomeDialog) {
-            setIsWelcomeModalOpen(true);
-        }
-    }, [initialNotesCount]);
-
-    const handleCloseWelcomeDialog = () => {
-        setIsWelcomeModalOpen(false);
-        localStorage.setItem('has-seen-welcome-dialog', 'true');
-    };
+    const [error, setError] = useState<string | null>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);   
 
     const sendMessages = async (messages: MessageParam[]) => {
         setError(null);
@@ -127,6 +98,10 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
                 const errorData = await streamResponse.json();
                 console.error('Error opening stream:', errorData);
                 setError(errorData.message);
+                return;
+            }
+
+            if(!streamResponse.body){
                 return;
             }
 
@@ -202,20 +177,16 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
     }
 
     return (
-        <>
-            <WelcomeDialog
-                isOpen={isWelcomeModalOpen}
-                onClose={handleCloseWelcomeDialog}
-            />
+        <>      
             <Card className="bg-gray-100 w-full h-full flex flex-col mx-auto">
                 <CardContent className="flex-grow">
                     <div className="h-[75vh] p-4 overflow-auto">
                         <div>
-                            {messages.map((msg, index) => (
-                                <ChatMessage key={index} message={msg} showDeleteButton={!!error} onDeleteMessage={() => deleteMessageByIndex(index)} />
+                            {messages.map((msg: any, index) => (
+                                <ChatMessage isLoading={false} key={index} message={msg} showDeleteButton={!!error} onDeleteMessage={() => deleteMessageByIndex(index)} />
                             ))}
                             {streamingContent && (
-                                <ChatMessage message={{ role: "assistant", content: [{ type: "text", text: streamingContent }] }} isLoading={true} />
+                                <ChatMessage showDeleteButton={false} message={{ role: "assistant", content: [{ type: "text", text: streamingContent }] }} isLoading={true} />
                             )}
                             {error && <ErrorAlert message={error} />}
                             <div ref={messagesEndRef} />
@@ -223,7 +194,7 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
                     </div>
                 </CardContent>
                 <CardFooter className="">
-                    <form onSubmit={(e) => { e.preventDefault(); sendNewMessage(); }} className="flex w-full space-x-2">
+                    <form onKeyDown={(e: KeyboardEvent) => { if(e.key ==  'Enter' && !e.shiftKey){ e.preventDefault(); sendNewMessage(); }}} onSubmit={(e) => { e.preventDefault(); sendNewMessage(); }} className="flex w-full space-x-2">
                         <Textarea
                             placeholder="Type a message..."
                             value={inputMessage}
@@ -231,7 +202,7 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
                             disabled={isLoading}
                         />
                         <Button type="submit" disabled={isLoading}>
-                            Send
+                            <SendIcon className='mr-1'></SendIcon>Send
                         </Button>
                         {error && (
                             <Button type="button" onClick={() => sendMessages(messages)} >

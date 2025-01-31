@@ -1,0 +1,23 @@
+{    
+    "description": "Search GitHub for repositories or user profiles",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "query": {
+                "type": "string",
+                "description": "Search query. For repositories, you can use qualifiers like 'language:', 'stars:>1000'. For users, you can use qualifiers like 'location:', 'followers:>1000'"
+            },
+            "type": {
+                "type": "string",
+                "enum": ["repositories", "users"],
+                "description": "What to search for - either repositories or user profiles"
+            },
+            "branch": {
+                "type": "string",
+                "description": "GitHub repo branch",                
+                "optional": true
+            }
+        },
+        "required": ["query", "type"]
+    }
+}
