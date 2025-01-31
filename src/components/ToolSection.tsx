@@ -47,13 +47,15 @@ const ToolSection = ({ icon: Icon, title, content } : { icon: any, title: string
             </div>
             <CollapsibleContent className="p-2 bg-white border border-t-0 border-gray-200 rounded-b-md">
                 <div className="prose">
-                <SyntaxHighlighter 
-                    language="json"
-                    style={vs}
-                    customStyle={{ margin: 0 }}
-                >
-                    {toolCode || []}
-                </SyntaxHighlighter>
+                {React.createElement(
+                    SyntaxHighlighter as any, // Cast to `any` to bypass TypeScript issues
+                    {
+                        language: "json",
+                        style: vs,
+                        customStyle: { margin: 0 },
+                    },
+                    toolCode || [] // Pass children as the third argument
+                )}
                 </div>
             </CollapsibleContent>
         </Collapsible>

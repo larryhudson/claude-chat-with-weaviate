@@ -1,5 +1,5 @@
 import { ClaudeWeaverTool } from "../tool"
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 
 interface FindRSSToolParams {
     url: string
