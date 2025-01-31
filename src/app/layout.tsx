@@ -22,7 +22,7 @@ export default function RootLayout({
         <header>
           <Navigation />
         </header>
-        <main className="container max-w-3xl mx-auto p-4 flex-grow">
+        <main className="container max-w-1xl mx-auto p-4 flex-grow">
           {children}
         </main>
       </body>

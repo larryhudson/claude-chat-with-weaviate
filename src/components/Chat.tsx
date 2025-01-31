@@ -11,6 +11,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MessageParam } from '@anthropic-ai/sdk/resources/messages.mjs';
 import ToolSection from './ToolSection';
 import { getNormalizedToolName } from '../tools/shared'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const ErrorAlert = ({ message } : { message: string }) => (
     <Alert variant="destructive" className="mt-4 border-red-600 bg-red-50">
@@ -34,16 +36,60 @@ const ChatMessage = ({ message, isLoading = false, showDeleteButton = false, onD
     useEffect(() => {
 
     }, []);
+
+    function detectCode(text: string): React.ReactElement<any, any> {
+        // Regular expression to match code blocks with language specifier
+        const codeBlockRegex = /```(\w+)\n([\s\S]*?)```/g;
+        const parts: React.ReactNode[] = [];
+        let lastIndex = 0;
+        let match;
+        let i = 0;
+    
+        // Find all code blocks in the text
+        while ((match = codeBlockRegex.exec(text)) !== null) {
+            // Add text before the code block
+            if (match.index > lastIndex) {
+                const textBefore = text.slice(lastIndex, match.index);
+                parts.push(<Markdown key={`text-${i}`}>{textBefore}</Markdown>);
+            }
+    
+            // Add the code block
+            parts.push(
+                <SyntaxHighlighter
+                    key={`code-${i}`}
+                    language={match[1]}
+                    style={oneDark}
+                    customStyle={{ margin: 0 }}
+                >
+                    {match[2].trim()}
+                </SyntaxHighlighter>
+            );
+
+            console.log(match[1], match[2].trim());
+    
+            lastIndex = match.index + match[0].length;
+            i++;
+        }
+    
+        // Add remaining text after last code block
+        if (lastIndex < text.length) {
+            const remainingText = text.slice(lastIndex);
+            parts.push(<Markdown key={`text-${i}`}>{remainingText}</Markdown>);
+        }
+    
+        // Wrap all parts in a div
+        return <div key={i} className="prose">{parts}</div>;
+    }
     
     return (
         <Card className={`mb-4 ${isUser ? 'ml-auto bg-blue-100' : 'mr-auto'} max-w-[75%] shadow-lg`}>
             <CardContent className="p-4 space-y-4">
                 {message.content.map((contentBlock: ChatContentType, index) => (
                     contentBlock.type === 'tool_use' ? (
-                        <ToolSection
-                            key={index}
-                            icon={Settings}
-                            title={`Using tool: ${getNormalizedToolName(contentBlock.name || '')}`}
+                    <ToolSection
+                        key={index}
+                        icon={Settings}
+                        title={`Using tool: ${getNormalizedToolName(contentBlock.name || '')}`}
                             content={contentBlock.input as string}
                         />
                     ) : contentBlock.type === 'tool_result' ? (
@@ -54,19 +100,17 @@ const ChatMessage = ({ message, isLoading = false, showDeleteButton = false, onD
                             content={contentBlock.content}
                         />
                     ) : (
-                        <Markdown key={index} className="prose">
-                            {contentBlock.text}
-                        </Markdown>
+                        detectCode(contentBlock.text)
                     )
-                ))
-                }
+                ))}
+
                 {isLoading && (
                     <div className="text-right">
                         <LoaderCircle className="animate-spin" /> Loading...
                     </div>
                 )}
                 {showDeleteButton && (
-                    <Button variant="destructive" onClick={onDeleteMessage}>
+                    <Button variant="destructive" onClick={onDeleteMessage} size="sm">
                         Delete
                     </Button>
                 )}
@@ -178,9 +222,9 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
 
     return (
         <>      
-            <Card className="bg-gray-100 w-full h-full flex flex-col mx-auto">
+            <Card className="bg-gray-100 w-[90%] h-full flex flex-col mx-auto">
                 <CardContent className="flex-grow">
-                    <div className="h-[75vh] p-4 overflow-auto">
+                    <div className="h-[80vh] p-4 overflow-auto">
                         <div>
                             {messages.map((msg: any, index) => (
                                 <ChatMessage isLoading={false} key={index} message={msg} showDeleteButton={!!error} onDeleteMessage={() => deleteMessageByIndex(index)} />
@@ -194,18 +238,18 @@ const ChatComponent = ({ initialNotesCount }: { initialNotesCount: number }) => 
                     </div>
                 </CardContent>
                 <CardFooter className="">
-                    <form onKeyDown={(e: KeyboardEvent) => { if(e.key ==  'Enter' && !e.shiftKey){ e.preventDefault(); sendNewMessage(); }}} onSubmit={(e) => { e.preventDefault(); sendNewMessage(); }} className="flex w-full space-x-2">
+                    <form onKeyDown={(e: KeyboardEvent) => { if(e.key ==  'Enter' && !e.shiftKey){ e.preventDefault(); sendNewMessage(); }}} onSubmit={(e) => { e.preventDefault(); sendNewMessage(); }} className="flex w-full space-x-1">
                         <Textarea
                             placeholder="Type a message..."
                             value={inputMessage}
                             onChange={(e) => setInputMessage(e.target.value)}
                             disabled={isLoading}
                         />
-                        <Button type="submit" disabled={isLoading}>
-                            <SendIcon className='mr-1'></SendIcon>Send
+                        <Button type="submit" disabled={isLoading} size="sm">
+                            <SendIcon className='mr-1 h-4 w-4'></SendIcon>Send
                         </Button>
                         {error && (
-                            <Button type="button" onClick={() => sendMessages(messages)} >
+                            <Button type="button" onClick={() => sendMessages(messages)} size="sm">
                                 Try again
                             </Button>
                         )}
